@@ -1,0 +1,13 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start-dev-win": "SET NODE_ENV=development && nodemon index.js"
+  },
+  "author": "Saulo",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
