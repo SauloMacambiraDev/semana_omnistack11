@@ -1,7 +1,7 @@
 import React from 'react';
 
 // function Header(props){
-function Header({ title, children }){
+function Header({ title, children }) {
     // const { title, children } = props
 
     return (
