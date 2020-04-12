@@ -1,7 +1,19 @@
 // Update with your config settings.
 
 module.exports = {
-
+  // development: {
+  //   client: 'mysql',
+  //   connection: {
+  //     host: process.env.DB_DEV_HOST,
+  //     user: process.env.DB_DEV_USERNAME,
+  //     password: process.env.DB_DEV_PASSWORD,
+  //     database: process.env.DB_DEV_DATABASE
+  //   },
+  //   migrations: {
+  //     directory: './src/database/migrations'
+  //   },
+  //   useNullAsDefault: true,
+  // },
   development: {
     client: 'sqlite3',
     connection: {

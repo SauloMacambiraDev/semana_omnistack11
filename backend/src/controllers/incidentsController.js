@@ -7,8 +7,6 @@ exports.create = async (req, res) => {
 
         const { authorization: ongId } = req.headers
 
-
-
         // const result = await dbConnection('incidents').insert({
         //     title,
         //     description,
