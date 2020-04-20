@@ -1,21 +1,21 @@
 const crypto = require('crypto');
 const dbConnection = require('./../database/connection');
+const generateUniqueId = require('./../utils/generateUniqueId')
 
+exports.index = async (req, res) => {
 
-exports.index = async (req,res) => {
-
-    try{
+    try {
 
         const ongs = await dbConnection('ongs').select('*')
 
         return res.status(200).json({
             status: 'success',
-            data:{ 
+            data: {
                 ongs
             }
         })
-    }catch(err){
-        return res.status(500).json({ 
+    } catch (err) {
+        return res.status(500).json({
             status: 'failure',
             message: err.message
         })
@@ -23,12 +23,12 @@ exports.index = async (req,res) => {
 
 }
 
-exports.create = async (req,res) => {
+exports.create = async (req, res) => {
 
-    try{
+    try {
         const { name, email, whatsapp, city, uf } = req.body
 
-        const id = crypto.randomBytes(12).toString('HEX')
+        const id = generateUniqueId()
 
         console.log(id)
 
@@ -46,20 +46,20 @@ exports.create = async (req,res) => {
             id
         })
 
-    } catch(err){
-        return res.status(500).json({ 
+    } catch (err) {
+        return res.status(500).json({
             status: 'failure',
             message: `Wasn't possible to create ONG. ${err.message}`
         })
     }
 }
 
-exports.show = (req,res) => {
+exports.show = (req, res) => {
 
 }
-exports.update = (req,res) => {
+exports.update = (req, res) => {
 
 }
-exports.destroy = (req,res) => {
+exports.destroy = (req, res) => {
 
 }

@@ -2,7 +2,7 @@ const dbConnection = require('../database/connection');
 
 
 exports.create = async (req, res) => {
-    try{
+    try {
         const { title, description, value } = req.body //id will be generated incrementally
 
         const { authorization: ongId } = req.headers
@@ -13,7 +13,7 @@ exports.create = async (req, res) => {
         //     value,
         //     ong_id: ongId
         // })
-        
+
         // const id = result[0]
 
         const [id] = await dbConnection('incidents').insert({
@@ -27,70 +27,70 @@ exports.create = async (req, res) => {
             status: 'success',
             idIncident: id
         })
-    }catch(err){
-        return res.status(500).json({ 
+    } catch (err) {
+        return res.status(500).json({
             status: 'failure',
             message: err.message
         })
     }
 }
 
-exports.index = async (req,res) => {
-    try{
+exports.index = async (req, res) => {
+    try {
         const { page = 1 } = req.query
-        
-        const [totalIncidents] = await dbConnection('incidents')
-                                        .count()
 
-       const incidents = await dbConnection('incidents')
-                                .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
-                                .limit(5)
-                                .offset((page - 1 ) * 5)
-                                .select([
-                                    'incidents.*', 
-                                    'ongs.name',
-                                    'ongs.email',
-                                    'ongs.whatsapp',
-                                    'ongs.city',
-                                    'ongs.uf'
-                                ])
+        const [totalIncidents] = await dbConnection('incidents')
+            .count()
+
+        const incidents = await dbConnection('incidents')
+            .join('ongs', 'ongs.id', '=', 'incidents.ong_id')
+            .limit(5)
+            .offset((page - 1) * 5)
+            .select([
+                'incidents.*',
+                'ongs.name',
+                'ongs.email',
+                'ongs.whatsapp',
+                'ongs.city',
+                'ongs.uf'
+            ])
 
         res.header('X-Total-Count', totalIncidents['count(*)'])
 
-       return res.status(201).json({
-           status: 'success',
-           results: totalIncidents['count(*)'],
-           incidents
-       })
-       
-    }catch(err){
-        return res.status(500).json({ 
+        return res.status(201).json({
+            status: 'success',
+            results: totalIncidents['count(*)'],
+            incidents
+        })
+
+    } catch (err) {
+        return res.status(500).json({
             status: 'failure',
             message: err.message
         })
     }
 }
 
-exports.show = async (req,res) => {
-    try{
+exports.show = async (req, res) => {
+    try {
         const { authorization: ongId } = req.headers
 
         const { id } = req.params
 
         const incident = await dbConnection('incidents')
-                                .where({
-                                    id
-                                })
-                                .select('*')
-                                .first()
-        if(!incident){
+            .where({
+                id
+            })
+            .select('*')
+            .first()
+        if (!incident) {
             return res.status(404).json({
                 status: 'failure',
                 message: `No incident was found with id ${id}`
             })
         }
-        
-        if(incident.ong_id !== ongId){
+
+        if (incident.ong_id !== ongId) {
             return res.status(401).json({
                 status: 'failure',
                 message: `You're not authorized to delete such incident`
@@ -101,7 +101,7 @@ exports.show = async (req,res) => {
             status: 'success',
             incident
         })
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
             status: 'failure',
             message: err.message
@@ -109,44 +109,44 @@ exports.show = async (req,res) => {
     }
 }
 
-exports.destroy = async(req,res) => {
-    try{
+exports.destroy = async (req, res) => {
+    try {
 
         const { id } = req.params
 
         const { authorization: ongId } = req.headers
 
         const incident = await dbConnection('incidents')
-        .where({
-            id
-        })
-        .select('ong_id')
-        .first()
+            .where({
+                id
+            })
+            .select('ong_id')
+            .first()
 
-        if(!incident){
+        if (!incident) {
             return res.status(404).json({
                 status: 'failure',
                 message: 'No incident was found'
             })
         }
 
-        if(incident.ong_id !== ongId){
+        if (incident.ong_id !== ongId) {
             return res.status(401).json({
                 status: 'failure',
                 message: `You're not authorized`
             })
-        } 
+        }
 
         await dbConnection('incidents')
-                            .where({id})
-                            .delete()
+            .where({ id })
+            .delete()
 
         return res.status(204).json({
             status: 'success',
             data: null
         })
 
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
             status: 'failure',
             message: err.message
@@ -154,24 +154,24 @@ exports.destroy = async(req,res) => {
     }
 }
 
-exports.listByOng = async (req,res) => {
-    try{
+exports.listByOng = async (req, res) => {
+    try {
         const { page = 1 } = req.query
 
         // const { ongId } = req.params
         const { authorization: ongId } = req.headers
-    
+
         const [count] = await dbConnection('incidents')
-                                    .count()
+            .count()
 
         const incidents = await dbConnection('incidents')
-                                .where({ong_id: ongId})
-                                .limit(5)
-                                .offset((page -1) * 5)
-                                .select('*')
-                                
-        
-                                
+            .where({ ong_id: ongId })
+            .limit(5)
+            .offset((page - 1) * 5)
+            .select('*')
+
+
+
         res.header('X-Total-Count', count['count(*)'])
 
         return res.status(200).json({
@@ -179,7 +179,7 @@ exports.listByOng = async (req,res) => {
             // results: count,
             incidents
         })
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json({
             status: 'failure',
             message: err.message
