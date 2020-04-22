@@ -4,8 +4,7 @@ const dbConnection = require('../database/connection');
 exports.create = async (req, res) => {
     try {
         const { title, description, value } = req.body //id will be generated incrementally
-
-        const { authorization: ongId } = req.headers
+        // const { authorization: ongId } = req.headers
 
         // const result = await dbConnection('incidents').insert({
         //     title,
@@ -20,7 +19,7 @@ exports.create = async (req, res) => {
             title,
             description,
             value,
-            ong_id: ongId
+            ong_id: req.ong.id
         })
 
         return res.status(201).json({
@@ -73,7 +72,7 @@ exports.index = async (req, res) => {
 
 exports.show = async (req, res) => {
     try {
-        const { authorization: ongId } = req.headers
+        // const { authorization: ongId } = req.headers
 
         const { id } = req.params
 
@@ -90,10 +89,10 @@ exports.show = async (req, res) => {
             })
         }
 
-        if (incident.ong_id !== ongId) {
+        if (incident.ong_id !== req.ong.id) {
             return res.status(401).json({
                 status: 'failure',
-                message: `You're not authorized to delete such incident`
+                message: `You're not authorized to see this incident`
             })
         }
 
@@ -114,7 +113,7 @@ exports.destroy = async (req, res) => {
 
         const { id } = req.params
 
-        const { authorization: ongId } = req.headers
+        // const { authorization: ongId } = req.headers
 
         const incident = await dbConnection('incidents')
             .where({
@@ -130,10 +129,10 @@ exports.destroy = async (req, res) => {
             })
         }
 
-        if (incident.ong_id !== ongId) {
+        if (incident.ong_id !== req.ong.id) {
             return res.status(401).json({
                 status: 'failure',
-                message: `You're not authorized`
+                message: `You're not authorized to delete this incident`
             })
         }
 
@@ -159,24 +158,24 @@ exports.listByOng = async (req, res) => {
         const { page = 1 } = req.query
 
         // const { ongId } = req.params
-        const { authorization: ongId } = req.headers
+        // const { authorization: ongId } = req.headers
+        
 
-        const [count] = await dbConnection('incidents')
+        const [totalIncidents] = await dbConnection('incidents')
+            .where({ong_id: req.ong.id})
             .count()
 
         const incidents = await dbConnection('incidents')
-            .where({ ong_id: ongId })
+            .where({ ong_id: req.ong.id })
             .limit(5)
             .offset((page - 1) * 5)
             .select('*')
 
-
-
-        res.header('X-Total-Count', count['count(*)'])
+        res.header('X-Total-Count', totalIncidents['count(*)'])
 
         return res.status(200).json({
             status: 'success',
-            // results: count,
+            results: totalIncidents['count(*)'],
             incidents
         })
     } catch (err) {

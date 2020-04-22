@@ -15,11 +15,14 @@ const { celebrate, Segments, Joi } = require('celebrate')
 
 // Auth Routes
 
+// Sign in with email & password
 ongsRouter.post('/session', celebrate({
     [Segments.BODY]: Joi.object().keys({
-        id: Joi.number().required()
+        // id: Joi.string().required()
+        email: Joi.string().required().email(),
+        password: Joi.string().required()
     })
-}), sessionController.create)
+}), sessionController.signIn)
 
 // CRUD Routes
 ongsRouter
@@ -30,18 +33,19 @@ ongsRouter
             name: Joi.string().required().min(3),
             email: Joi.string().required().email(),
             whatsapp: Joi.string().required(),
+            password: Joi.string().required().min(6), 
+            confirmPassword: Joi.string().required().min(6), 
             city: Joi.string().required(),
             uf: Joi.string().required().length(2),
         })
     }), ongsController.create)
-    .get(ongsController.index)
+    .get(sessionController.protect, ongsController.index)
 
 ongsRouter
     .route('/:id')
     .get(ongsController.show)
-// .put(ongsController.update)
+    // .put(ongsController.update)
 // .delete(ongsController.destroy)
 
-// ongsRouter.use('/:ongId/incidents', incidentsRouter)
 
 module.exports = ongsRouter

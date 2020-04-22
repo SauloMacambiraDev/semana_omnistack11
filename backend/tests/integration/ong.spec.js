@@ -5,12 +5,18 @@ const connection = require('./../../src/database/connection')
 
 describe('ONG', () => {
     beforeEach(async () => {
+        await connection.migrate.rollback();
         await connection.migrate.latest(); // samething as npx knex migrate:latest on terminal
+    })
+
+    afterAll(async () => {
+        await connection.destroy();
     })
 
     it('should be able to create a new ONG', async () => {
         const response = await request(app)
-            .post('/ongs')
+            .post('/api/v1/ongs')
+            // .set('Authorization', 'someSortOfValidID') in case we wanna make tests using Authentication
             .send({
                 name: "Teste",
                 email: "contato@apad.com.br",
@@ -19,8 +25,9 @@ describe('ONG', () => {
                 uf: "SC"
             })
 
+        console.log('RESPONDE BODY IS:')
         console.log(response.body)
-        // expect(response.body).toHaveProperty('id')
-        // expect(response.body.id).toHaveLength(8)
+        expect(response.body).toHaveProperty('id')
+        expect(response.body.id).toHaveLength(8)
     })
 })

@@ -3,15 +3,16 @@ const incidentRouter = express.Router()
 // const incidentRouter = express.Router({ mergeParams: true })
 const { celebrate, Segments, Joi } = require('celebrate')
 const incidentsController = require('./../controllers/incidentsController')
+const sessionController = require('./../controllers/sessionController')
 
 
 // Adding middleware on router handlers bellow
-incidentRouter.use(celebrate({
-    [Segments.HEADERS]: Joi.object({
-        authorization: Joi.string().required()
-    }).unknown()
-}))
-
+// incidentRouter.use(celebrate({
+//     [Segments.HEADERS]: Joi.object({
+//         authorization: Joi.string().required()
+//     }).unknown()
+// }))
+incidentRouter.use(sessionController.protect)
 
 incidentRouter
     .get('/listByOng', celebrate({

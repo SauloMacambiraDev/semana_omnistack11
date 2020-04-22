@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 const dbConnection = require('./../database/connection');
 const generateUniqueId = require('./../utils/generateUniqueId')
+const generateToken = require('./../utils/generateToken')
+const createSendToken = require('./../utils/createSendToken')
+const bcrypt = require('bcryptjs')
 
 exports.index = async (req, res) => {
 
@@ -26,25 +29,32 @@ exports.index = async (req, res) => {
 exports.create = async (req, res) => {
 
     try {
-        const { name, email, whatsapp, city, uf } = req.body
+        let { name, email, whatsapp, password, confirmPassword, city, uf } = req.body
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                status: 'failure',
+                message: 'Your confirm password is different from password.'
+             })
+        }
 
         const id = generateUniqueId()
-
         console.log(id)
+
+        // Encrypt password with BCRYPT
+        password = await bcrypt.hash(password, 12)
 
         const ong = await dbConnection('ongs').insert({
             id,
             name,
             email,
+            password,
             whatsapp,
             city,
             uf
         })
 
-        return res.status(201).json({
-            status: 'success',
-            id
-        })
+        createSendToken(ong, 201, res)
 
     } catch (err) {
         return res.status(500).json({
