@@ -33,8 +33,8 @@ ongsRouter
             name: Joi.string().required().min(3),
             email: Joi.string().required().email(),
             whatsapp: Joi.string().required(),
-            password: Joi.string().required().min(6), 
-            confirmPassword: Joi.string().required().min(6), 
+            password: Joi.string().required().min(6),
+            confirmPassword: Joi.string().required().min(6),
             city: Joi.string().required(),
             uf: Joi.string().required().length(2),
         })
@@ -44,7 +44,7 @@ ongsRouter
 ongsRouter
     .route('/:id')
     .get(ongsController.show)
-    // .put(ongsController.update)
+// .put(ongsController.update)
 // .delete(ongsController.destroy)
 
 

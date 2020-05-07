@@ -35,16 +35,24 @@ exports.create = async (req, res) => {
             return res.status(400).json({
                 status: 'failure',
                 message: 'Your confirm password is different from password.'
-             })
+            })
+        }
+
+        const ongExist = await dbConnection('ongs').where('email', email).select('*').first()
+        if (ongExist) {
+            return res.status(400).json({
+                status: 'failure',
+                message: `There is a ong with email ${email} already signed up. Please choose another email.`
+            })
         }
 
         const id = generateUniqueId()
-        console.log(id)
+
 
         // Encrypt password with BCRYPT
         password = await bcrypt.hash(password, 12)
 
-        const ong = await dbConnection('ongs').insert({
+        let ongObject = {
             id,
             name,
             email,
@@ -52,9 +60,11 @@ exports.create = async (req, res) => {
             whatsapp,
             city,
             uf
-        })
+        };
 
-        createSendToken(ong, 201, res)
+        const ong = await dbConnection('ongs').insert(ongObject);
+
+        createSendToken(ongObject, 201, res)
 
     } catch (err) {
         return res.status(500).json({
@@ -64,9 +74,25 @@ exports.create = async (req, res) => {
     }
 }
 
-exports.show = (req, res) => {
+exports.show = async (req, res, next) => {
+    const { id } = req.params
 
+    const ong = await dbConnection('ongs').select('*').where('id', id).first()
+    if (!ong) {
+        return res.status(400).json({
+            status: 'failure',
+            message: 'No ong was found with such id'
+        })
+    }
+
+    return res.status(200).json({
+        status: 'success',
+        data: {
+            ong
+        }
+    })
 }
+
 exports.update = (req, res) => {
 
 }

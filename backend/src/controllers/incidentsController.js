@@ -129,13 +129,6 @@ exports.destroy = async (req, res) => {
             })
         }
 
-        if (incident.ong_id !== req.ong.id) {
-            return res.status(401).json({
-                status: 'failure',
-                message: `You're not authorized to delete this incident`
-            })
-        }
-
         await dbConnection('incidents')
             .where({ id })
             .delete()
@@ -157,16 +150,16 @@ exports.listByOng = async (req, res) => {
     try {
         const { page = 1 } = req.query
 
-        // const { ongId } = req.params
+        const { id: ongId } = req.params
         // const { authorization: ongId } = req.headers
-        
+
 
         const [totalIncidents] = await dbConnection('incidents')
-            .where({ong_id: req.ong.id})
+            .where({ ong_id: ongId })
             .count()
 
         const incidents = await dbConnection('incidents')
-            .where({ ong_id: req.ong.id })
+            .where({ ong_id: ongId })
             .limit(5)
             .offset((page - 1) * 5)
             .select('*')

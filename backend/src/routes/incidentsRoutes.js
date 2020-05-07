@@ -12,10 +12,11 @@ const sessionController = require('./../controllers/sessionController')
 //         authorization: Joi.string().required()
 //     }).unknown()
 // }))
-incidentRouter.use(sessionController.protect)
+
+// incidentRouter.use(sessionController.protect)
 
 incidentRouter
-    .get('/listByOng', celebrate({
+    .get('/listByOng/:id', celebrate({
         [Segments.QUERY]: Joi.object().keys({
             page: Joi.number()
         })
@@ -23,18 +24,21 @@ incidentRouter
 
 incidentRouter
     .route('/')
-    .post(celebrate({
-        [Segments.BODY]: Joi.object().keys({
-            title: Joi.string().required(),
-            description: Joi.string().required(),
-            value: Joi.number().required()
-        })
-    }), incidentsController.create)
-    .get(celebrate({
-        [Segments.QUERY]: Joi.object().keys({
-            page: Joi.number()
-        })
-    }), incidentsController.index)
+    .post(
+        sessionController.protect,
+        celebrate({
+            [Segments.BODY]: Joi.object().keys({
+                title: Joi.string().required(),
+                description: Joi.string().required(),
+                value: Joi.number().required()
+            })
+        }), incidentsController.create)
+    .get(
+        celebrate({
+            [Segments.QUERY]: Joi.object().keys({
+                page: Joi.number()
+            })
+        }), incidentsController.index)
 
 incidentRouter
     .route('/:id')
