@@ -15,6 +15,7 @@ export default function NewIncident() {
     const history = useHistory()
 
     const ongId = localStorage.getItem('ongId')
+    const token = localStorage.getItem('token')
     // const ongName = localStorage.getItem('ongName')
 
     const newIncidentHandler = async (e) => {
@@ -29,7 +30,8 @@ export default function NewIncident() {
 
             await api.post('/incidents', data, {
                 headers: {
-                    Authorization: ongId
+                    // Authorization: ongId
+                    Authorization: `Bearer ${token}`
                 }
             })
 

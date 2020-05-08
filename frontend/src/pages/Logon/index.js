@@ -10,6 +10,8 @@ import api from './../../services/api'
 
 export default function Logon() {
     const [ongId, setOngId] = useState('')
+    const [ongEmail, setOngEmail] = useState('')
+    const [ongPassword, setOngPassword] = useState('')
 
     const history = useHistory()
 
@@ -17,16 +19,27 @@ export default function Logon() {
         e.preventDefault()
 
         try {
-            const response = await api.post('/ongs/session', { id: ongId })
+            const bodyRequest = {
+                email: ongEmail,
+                password: ongPassword
+            };
+
+            // const response = await api.post('/ongs/session', { id: ongId })
+            const response = await api.post('/ongs/session', bodyRequest)
+            console.log(response.data); // Json response
 
             // Salva em cash no navegador
-            localStorage.setItem('ongId', ongId)
-            localStorage.setItem('ongName', response.data.ong.name)
+            localStorage.setItem('ongId', response.data.ong.id);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('ongName', response.data.ong.name);
 
             history.push('/profile')
         } catch (err) {
-            console.log(err.message)
-            alert(`Was not possible to log in. Please try again`)
+            // console.log(err.response)
+            // console.log(err.message)
+
+            alert(`Was not possible to log in. Please try again`);
+
         }
 
     }
@@ -37,10 +50,20 @@ export default function Logon() {
                 <img src={logoImg} alt="Be the Hero" />
                 <form onSubmit={loginHandler}>
                     <h1>Faça seu logon</h1>
-                    <input type="text"
+                    {/* <input type="text"
                         placeholder="Your ID"
                         value={ongId}
                         onChange={e => setOngId(e.target.value)}
+                    /> */}
+                    <input type="text"
+                        placeholder="Your E-mail"
+                        value={ongEmail}
+                        onChange={e => setOngEmail(e.target.value)}
+                    />
+                    <input type="password"
+                        placeholder="Your password"
+                        value={ongPassword}
+                        onChange={e => setOngPassword(e.target.value)}
                     />
                     <button className="button" type="submit">Entrar</button>
                     {/* <a href=""></a> not a good practice since this is a feature from html. */}

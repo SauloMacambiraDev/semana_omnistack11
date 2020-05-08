@@ -13,6 +13,8 @@ export default function Register() {
     const [whatsapp, setWhatsapp] = useState('')
     const [city, setCity] = useState('')
     const [uf, setUf] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
 
     const history = useHistory()
 
@@ -21,6 +23,8 @@ export default function Register() {
         const data = {
             name,
             email,
+            password,
+            confirmPassword,
             whatsapp,
             city,
             uf
@@ -32,7 +36,8 @@ export default function Register() {
             console.log('Response data coming from NodeJs API:')
             console.log(response.data)
 
-            alert(`Seu Id de acesso: ${response.data.id}`)
+            // alert(`Seu Id de acesso: ${response.data.id}`)
+            alert(`Your account has been created successfully!`)
             history.push('/')
             // setName('')
             // setEmail('')
@@ -70,7 +75,16 @@ export default function Register() {
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                     />
-
+                    <input type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+                    <input type="password"
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                    />
                     <input type="text"
                         placeholder="Whatsapp"
                         value={whatsapp}
